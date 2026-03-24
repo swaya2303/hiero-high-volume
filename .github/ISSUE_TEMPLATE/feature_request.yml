@@ -1,0 +1,70 @@
+name: Feature Request
+description: Propose a new feature or improvement
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Feature title
+      description: A concise name for the feature
+      placeholder: "Support FileCreateTransaction in batch operations"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: entity_type_affected
+    attributes:
+      label: Entity type affected
+      description: Which entity types does this feature relate to?
+      options:
+        - label: Account
+        - label: Token
+        - label: Topic
+        - label: All
+        - label: Not entity-specific
+
+  - type: input
+    id: hip_reference
+    attributes:
+      label: HIP reference
+      description: If this relates to a specific Hedera Improvement Proposal
+      placeholder: "e.g. HIP-1313, HIP-XXXX, or N/A"
+    validations:
+      required: false
+
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: Problem statement
+      description: What problem does this feature solve? Why is it needed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed solution
+      description: How would you solve this? Include API surface changes if applicable.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives_considered
+    attributes:
+      label: Alternatives considered
+      description: What other approaches did you consider? Why were they rejected?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: would_you_implement_this
+    attributes:
+      label: Would you implement this?
+      description: Are you willing to submit a PR for this feature?
+      options:
+        - "Yes"
+        - "No"
+        - "Maybe"
+    validations:
+      required: true

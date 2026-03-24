@@ -1,0 +1,69 @@
+# GPG Signature Verification — ensures every commit in a PR is GPG-signed.
+# Uses plain bash + git, no third-party actions.
+
+name: GPG Verify
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify-signatures:
+    name: Verify GPG Signatures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch enough history to cover all PR commits
+          fetch-depth: 0
+
+      - name: Check GPG signatures on all PR commits
+        run: |
+          echo "Checking GPG signatures for commits in this PR..."
+          echo ""
+
+          # Get the range of commits introduced by this PR.
+          # github.event.pull_request.base.sha is the merge base.
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          FAILED=0
+          TOTAL=0
+
+          while IFS= read -r line; do
+            TOTAL=$((TOTAL + 1))
+            COMMIT_HASH=$(echo "$line" | cut -d' ' -f1)
+            COMMIT_MSG=$(echo "$line" | cut -d' ' -f2-)
+
+            # git log --format=%G? outputs:
+            #   G = Good (valid) signature
+            #   U = Good signature with unknown validity
+            #   B = Bad signature
+            #   N = No signature
+            #   E = Signature cannot be checked (missing key)
+            SIG_STATUS=$(git log --format='%G?' -1 "$COMMIT_HASH")
+
+            case "$SIG_STATUS" in
+              G|U)
+                echo "✅ $COMMIT_HASH — $COMMIT_MSG"
+                ;;
+              *)
+                echo "❌ $COMMIT_HASH — $COMMIT_MSG (signature status: $SIG_STATUS)"
+                FAILED=$((FAILED + 1))
+                ;;
+            esac
+          done < <(git log --oneline "$BASE_SHA".."$HEAD_SHA")
+
+          echo ""
+          echo "Checked $TOTAL commit(s): $((TOTAL - FAILED)) signed, $FAILED unsigned."
+          echo ""
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "=========================================================================="
+            echo " ERROR: All commits must be GPG-signed."
+            echo " See CONTRIBUTING.md for setup instructions."
+            echo "=========================================================================="
+            exit 1
+          fi
+
+          echo "All commits are GPG-signed. ✅"

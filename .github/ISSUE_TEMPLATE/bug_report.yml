@@ -1,0 +1,102 @@
+name: Bug Report
+description: Report a bug in hiero-high-volume
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Bug title
+      description: A concise summary of the bug
+      placeholder: "batchCreateAccounts throws unhandled rejection on BUSY status"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Network environment
+      description: Which Hedera network are you targeting?
+      options:
+        - testnet
+        - mainnet
+        - previewnet
+    validations:
+      required: true
+
+  - type: input
+    id: node_version
+    attributes:
+      label: Node.js version
+      description: Output of `node --version`
+      placeholder: "v20.11.0"
+    validations:
+      required: true
+
+  - type: input
+    id: sdk_version
+    attributes:
+      label: "@hashgraph/sdk version"
+      description: Output of `npm ls @hashgraph/sdk`
+      placeholder: "2.45.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: throttle_mode
+    attributes:
+      label: Throttle mode
+      description: Was the HIP-1313 high-volume flag active?
+      options:
+        - high-volume
+        - standard
+        - not applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? Include any relevant context.
+    validations:
+      required: true
+
+  - type: textarea
+    id: minimal_reproduction
+    attributes:
+      label: Minimal reproduction
+      description: The smallest code sample that reproduces the issue
+      placeholder: |
+        Paste the smallest batchCreate* call that reproduces the issue:
+
+        const creator = new HighVolumeCreator({ ... });
+        const job = await creator.batchCreateAccounts(10);
+      render: typescript
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual behavior
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: error_output
+    attributes:
+      label: Error output
+      description: Paste any stack traces, error logs, or console output
+      render: shell
+    validations:
+      required: false
