@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+
+# --- Conventional commit check via commitlint ---
+npx --no -- commitlint --edit "$1"
+
+# --- DCO sign-off check ---
+# Reads the commit message file and verifies a Signed-off-by line is present.
+# Handles names with hyphens, accents, apostrophes, and multi-part names.
+
+commit_msg_file="$1"
+if [ -z "$commit_msg_file" ]; then
+  commit_msg_file=".git/COMMIT_EDITMSG"
+fi
+
+dco_pattern="^Signed-off-by: .+ <.+@.+>"
+
+if ! grep -qE "$dco_pattern" "$commit_msg_file"; then
+  echo ""
+  echo "=========================================================================="
+  echo " ERROR: Missing Developer Certificate of Origin (DCO) sign-off."
+  echo "=========================================================================="
+  echo ""
+  echo " All commits to this project must include a DCO sign-off line"
+  echo " in the commit message body, certifying that you wrote or have"
+  echo " the right to submit the code under the project's license."
+  echo ""
+  echo " Add the following line to the END of your commit message:"
+  echo ""
+  echo "   Signed-off-by: Your Name <your.email@example.com>"
+  echo ""
+  echo " Or use the -s flag when committing:"
+  echo ""
+  echo "   git commit -s -m \"feat: your message\""
+  echo ""
+  echo "=========================================================================="
+  exit 1
+fi
